@@ -27,6 +27,7 @@ const globalOptions = {
   sharpPngOptions: {}, // options passed to the Sharp png output method
   sharpJpegOptions: {}, // options passed to the Sharp jpeg output method
   sharpAvifOptions: {}, // options passed to the Sharp avif output method
+  sharpHook: null,
   extensions: {},
   formatHooks: {
     svg: svgHook,
@@ -478,6 +479,11 @@ class Image {
         }
 
         let sharpInstance = sharpImage.clone();
+
+        if(typeof this.options.sharpHook === "function") {
+          sharpInstance = this.options.sharpHook(sharpInstance);
+        }
+
         if(stat.width < metadata.width || (this.options.svgAllowUpscale && metadata.format === "svg")) {
           let resizeOptions = {
             width: stat.width
